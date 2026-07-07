@@ -1,8 +1,10 @@
 /* ============================================================
    scene.js — 固定WebGL背景（three.js r128）
    極薄青のパーティクル網 + ワイヤーフレームグリッド。
-   スクロール進行でカメラが空間を前進・旋回し、
-   隊形が 神経網 → 整列グリッド → 「N」収束 へモーフする。
+   スクロール進行でカメラがロール/オービット/ドリー/FOVパンチを
+   組み合わせて空間を泳ぎ、隊形が 神経網 → 整列グリッド → 「N」収束、
+   最終CTAで「N」が左端へ寄り「ext.inc」が画面外から飛来して
+   「Next.inc」の粒子タイポグラフィが完成する。
    ============================================================ */
 (function () {
   'use strict';
@@ -10,27 +12,50 @@
   var NextScene = {
     ready: false,
     init: init,
-    setProgress: function (p) { state.targetProgress = Math.max(0, Math.min(1, p)); },
+    setProgress: function (p) { state.targetProgress = clamp01(p); },
+    setCTAProgress: function (p) { state.ctaExternal = true; state.ctaTarget = clamp01(p); },
     start: startLoop,
     stop: stopLoop
   };
   window.NextScene = NextScene;
 
+  var ACCENT = { r: 0.145, g: 0.388, b: 0.922 }; // #2563EB
+
   var state = {
     renderer: null, scene: null, camera: null,
     points: null, lines: null,
-    count: 0,
-    current: null,           // 現在座標
+    count: 0, nCount: 0,
+    current: null,
     neural: null, grid: null, nShape: null,
-    phase: null,             // 揺らぎ用の位相
+    extPts: null, extDelay: null, incMask: null, extReady: false,
+    baseCol: null,
+    phase: null,
     linePairs: [],
     lineGeo: null,
     progress: 0, targetProgress: 0,
+    cta: 0, ctaTarget: 0, ctaExternal: false,
+    cam: { x: 0, y: 4, z: 62, tx: 0, ty: 2, tz: 16, roll: 0, fov: 58 },
+    ctaScaleX: 1,
     raf: null, running: false,
-    lastT: 0,
     mouseX: 0, mouseY: 0,
-    reduced: false, lite: false
+    reduced: false, lite: false,
+    colK: -1
   };
+
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function smooth(a, b, x) {
+    var t = clamp01((x - a) / (b - a));
+    return t * t * (3 - 2 * t);
+  }
+  function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function backOut(t) {
+    var s = 2.2, u = t - 1;
+    return 1 + (s + 1) * u * u * u + s * u * u;
+  }
+  function gauss(x, c, w) {
+    var d = (x - c) / w;
+    return Math.exp(-d * d * 0.5);
+  }
 
   function init(opts) {
     opts = opts || {};
@@ -40,7 +65,8 @@
 
     state.reduced = !!opts.reduced;
     state.lite = !!opts.lite;
-    state.count = state.lite ? 320 : 950;
+    state.count = state.lite ? 420 : 950;
+    state.nCount = Math.round(state.count * 0.38);
 
     try {
       state.renderer = new THREE.WebGLRenderer({
@@ -66,6 +92,11 @@
     buildPoints();
     if (!state.lite) buildLines();
     buildGrids();
+    buildExtFormation();
+    // Webフォント読込後に ext.inc 隊形を作り直す（字形を正確に）
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { buildExtFormation(); });
+    }
 
     resize();
     window.addEventListener('resize', resize);
@@ -83,6 +114,7 @@
       // 静止1フレーム：整列グリッド隊形で描画して終了
       state.progress = state.targetProgress = 0.5;
       applyFormation(0);
+      applyCamera();
       state.renderer.render(state.scene, state.camera);
       return true;
     }
@@ -92,12 +124,13 @@
 
   /* ---------- 隊形の生成 ---------- */
   function buildFormations() {
-    var n = state.count;
+    var n = state.count, nC = state.nCount;
     state.neural = new Float32Array(n * 3);
     state.grid = new Float32Array(n * 3);
     state.nShape = new Float32Array(n * 3);
     state.current = new Float32Array(n * 3);
     state.phase = new Float32Array(n);
+    state.extDelay = new Float32Array(n - nC);
 
     var i, ix;
 
@@ -124,24 +157,91 @@
       state.grid[ix + 2] = -18 - (cz - rows / 2) * 5.2 - 38;
     }
 
-    // 3) 「N」収束：Nの3ストローク上にサンプリング（CTA、カメラ前方 z -108）
+    // 3a) 「N」収束：先頭38%の粒子をNの3ストロークへ（CTA面 z -108）
     var strokes = [
       [-14, -18, -14, 18],   // 左縦
       [-14, 18, 14, -18],    // 対角
       [14, -18, 14, 18]      // 右縦
     ];
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < nC; i++) {
       ix = i * 3;
       var s = strokes[i % 3];
-      var t = (Math.floor(i / 3) / Math.floor(n / 3 + 1)) + (Math.random() - 0.5) * 0.02;
+      var t = (Math.floor(i / 3) / Math.floor(nC / 3 + 1)) + (Math.random() - 0.5) * 0.02;
       t = Math.max(0, Math.min(1, t));
       state.nShape[ix] = s[0] + (s[2] - s[0]) * t + (Math.random() - 0.5) * 0.9;
-      state.nShape[ix + 1] = 6 + s[1] + (s[3] - s[1]) * t + (Math.random() - 0.5) * 0.9;
+      state.nShape[ix + 1] = 24 + s[1] + (s[3] - s[1]) * t + (Math.random() - 0.5) * 0.9;
       state.nShape[ix + 2] = -108 + (Math.random() - 0.5) * 2.5;
+    }
+
+    // 3b) 残りの粒子：N形成時は画面外（右・上下）へ退避 → CTA後半で ext.inc へ飛来
+    for (i = nC; i < n; i++) {
+      ix = i * 3;
+      var side = i % 4;
+      if (side < 2) {          // 右
+        state.nShape[ix] = 100 + Math.random() * 90;
+        state.nShape[ix + 1] = -40 + Math.random() * 110;
+      } else if (side === 2) { // 上
+        state.nShape[ix] = -50 + Math.random() * 150;
+        state.nShape[ix + 1] = 85 + Math.random() * 60;
+      } else {                 // 下
+        state.nShape[ix] = -50 + Math.random() * 150;
+        state.nShape[ix + 1] = -55 - Math.random() * 60;
+      }
+      state.nShape[ix + 2] = -96 - Math.random() * 26;
+      state.extDelay[i - nC] = Math.random() * 0.4;
     }
 
     // 初期位置 = 神経網
     state.current.set(state.neural);
+  }
+
+  /* ---------- 「ext.inc」の粒子ターゲット（オフスクリーンcanvasから採取） ---------- */
+  function buildExtFormation() {
+    try {
+      var cw = 560, ch = 160;
+      var cnv = document.createElement('canvas');
+      cnv.width = cw; cnv.height = ch;
+      var c = cnv.getContext('2d', { willReadFrequently: true });
+      if (!c) return;
+      c.clearRect(0, 0, cw, ch);
+      c.fillStyle = '#000';
+      c.font = '700 116px "Space Grotesk", Arial, sans-serif';
+      c.textBaseline = 'middle';
+      c.fillText('ext.inc', 8, 82);
+      var extW = c.measureText('ext').width;
+      var img = c.getImageData(0, 0, cw, ch).data;
+
+      var pts = [];
+      var step = 2;
+      for (var y = 0; y < ch; y += step) {
+        for (var x = 0; x < cw; x += step) {
+          if (img[(y * cw + x) * 4 + 3] > 140) pts.push([x, y]);
+        }
+      }
+      if (pts.length < 60) return;
+
+      var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, k;
+      for (k = 0; k < pts.length; k++) {
+        if (pts[k][0] < minX) minX = pts[k][0];
+        if (pts[k][0] > maxX) maxX = pts[k][0];
+        if (pts[k][1] < minY) minY = pts[k][1];
+        if (pts[k][1] > maxY) maxY = pts[k][1];
+      }
+      var scale = 86 / Math.max(1, maxX - minX);
+      var midX = (minX + maxX) / 2, midY = (minY + maxY) / 2;
+
+      var extN = state.count - state.nCount;
+      state.extPts = new Float32Array(extN * 3);
+      state.incMask = new Uint8Array(extN);
+      for (k = 0; k < extN; k++) {
+        var p = pts[Math.floor(k * pts.length / extN) % pts.length];
+        state.extPts[k * 3] = 20 + (p[0] - midX) * scale + (Math.random() - 0.5) * 0.7;
+        state.extPts[k * 3 + 1] = 22 - (p[1] - midY) * scale + (Math.random() - 0.5) * 0.7;
+        state.extPts[k * 3 + 2] = -108 + (Math.random() - 0.5) * 2.2;
+        state.incMask[k] = p[0] > 8 + extW + 2 ? 1 : 0; // 「.inc」側
+      }
+      state.extReady = true;
+    } catch (e) { /* canvas不可環境では ext.inc 収束を省略 */ }
   }
 
   function buildPoints() {
@@ -156,6 +256,7 @@
       var c = Math.random() < 0.05 ? acc : base;
       colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
+    state.baseCol = new Float32Array(colors);
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     var mat = new THREE.PointsMaterial({
@@ -215,34 +316,70 @@
 
   /* ---------- 隊形ブレンド ---------- */
   function weights(p) {
-    // 0-0.12 神経網 / 0.16-0.42 でグリッドへ / 0.72-0.95 でNへ収束
+    // 0-0.14 神経網 / 0.14-0.4 でグリッドへ / 0.62-0.86 でNへ収束（CTA前に完成）
     var wN = 1 - smooth(0.14, 0.4, p);
-    var wG = smooth(0.14, 0.4, p) * (1 - smooth(0.7, 0.94, p));
-    var wX = smooth(0.7, 0.94, p);
+    var wG = smooth(0.14, 0.4, p) * (1 - smooth(0.62, 0.86, p));
+    var wX = smooth(0.62, 0.86, p);
     var sum = wN + wG + wX || 1;
     return [wN / sum, wG / sum, wX / sum];
   }
-  function smooth(a, b, x) {
-    var t = Math.max(0, Math.min(1, (x - a) / (b - a)));
-    return t * t * (3 - 2 * t);
-  }
 
   function applyFormation(time) {
-    var n = state.count;
+    var n = state.count, nC = state.nCount;
     var w = weights(state.progress);
-    var wobble = (1 - w[2]) * (state.lite ? 0.5 : 1); // N収束時は揺らぎ0へ
     var pos = state.points.geometry.attributes.position.array;
-    var lerpK = state.reduced ? 1 : 0.065;
+    var lerpK = state.reduced ? 1 : 0.07;
+    var cta = state.cta;
+
+    // 疑似カールノイズ：隊形間の遷移中に振幅が増して「呼吸」する
+    var trans = 1 - (w[0] * w[0] + w[1] * w[1] + w[2] * w[2]); // 遷移中ほど大
+    var breathe = 0.6 + 0.4 * Math.sin(time * 0.0006);
+    var clarity = 1 - smooth(0.5, 0.9, cta) * 0.85;            // 文字収束時は鎮める
+    var amp = (0.75 + trans * 3.4) * breathe * clarity * (state.lite ? 0.6 : 1);
+    var t1 = time * 0.0011, t2 = time * 0.0009, t3 = time * 0.0007;
+
+    // CTA前半：Nを画面左端側へスライド / 後半：ext.incが飛来
+    var shiftX = -48 * easeInOut(clamp01(cta / 0.5));
+    var tB = clamp01((cta - 0.5) / 0.5);
+    var sx = state.ctaScaleX;
 
     for (var i = 0; i < n; i++) {
       var ix = i * 3;
       var ph = state.phase[i];
-      var tx = state.neural[ix] * w[0] + state.grid[ix] * w[1] + state.nShape[ix] * w[2];
-      var ty = state.neural[ix + 1] * w[0] + state.grid[ix + 1] * w[1] + state.nShape[ix + 1] * w[2];
-      var tz = state.neural[ix + 2] * w[0] + state.grid[ix + 2] * w[1] + state.nShape[ix + 2] * w[2];
-      // 有機的な揺らぎ（グリッド時は波打ち）
-      ty += Math.sin(time * 0.0011 + ph) * 1.6 * wobble + Math.sin(state.grid[ix] * 0.12 + time * 0.0013) * 2.2 * w[1];
-      tx += Math.cos(time * 0.0009 + ph * 1.7) * 1.2 * wobble;
+      var fx, fy, fz;
+
+      if (i < nC) {
+        fx = (state.nShape[ix] + shiftX) * sx;
+        fy = state.nShape[ix + 1];
+        fz = state.nShape[ix + 2];
+      } else {
+        var ei = i - nC, eo = ei * 3;
+        var ox = state.nShape[ix], oy = state.nShape[ix + 1], oz = state.nShape[ix + 2];
+        var e = 0;
+        if (state.extReady && tB > 0) {
+          e = backOut(clamp01((tB - state.extDelay[ei]) / 0.6)); // オーバーシュート付き飛来
+        }
+        if (e > 0) {
+          fx = ox + (state.extPts[eo] - ox) * e;
+          fy = oy + (state.extPts[eo + 1] - oy) * e;
+          fz = oz + (state.extPts[eo + 2] - oz) * e;
+        } else {
+          fx = ox; fy = oy; fz = oz;
+        }
+        fx *= sx;
+      }
+
+      var tx = state.neural[ix] * w[0] + state.grid[ix] * w[1] + fx * w[2];
+      var ty = state.neural[ix + 1] * w[0] + state.grid[ix + 1] * w[1] + fy * w[2];
+      var tz = state.neural[ix + 2] * w[0] + state.grid[ix + 2] * w[1] + fz * w[2];
+
+      // 有機的ドリフト（sin/cos合成の疑似カール）
+      var n1 = Math.sin(ty * 0.12 + t1 + ph);
+      var n2 = Math.cos(tx * 0.10 - t2 + ph * 1.7);
+      var n3 = Math.sin((tx + tz) * 0.06 + t3 + ph * 0.6);
+      tx += (n1 - n3 * 0.7) * amp;
+      ty += (n2 + n3 * 0.5) * amp + Math.sin(state.grid[ix] * 0.12 + time * 0.0013) * 2.2 * w[1];
+      tz += (n2 * 0.6 - n1 * 0.4) * amp;
 
       pos[ix] += (tx - pos[ix]) * lerpK;
       pos[ix + 1] += (ty - pos[ix + 1]) * lerpK;
@@ -254,31 +391,118 @@
     if (state.lines) {
       var lp = state.lineGeo.attributes.position.array;
       var pairs = state.linePairs;
-      for (var k = 0; k < pairs.length; k++) {
-        var a = pairs[k][0] * 3, b = pairs[k][1] * 3, o = k * 6;
+      for (var k2 = 0; k2 < pairs.length; k2++) {
+        var a = pairs[k2][0] * 3, b = pairs[k2][1] * 3, o = k2 * 6;
         lp[o] = pos[a]; lp[o + 1] = pos[a + 1]; lp[o + 2] = pos[a + 2];
         lp[o + 3] = pos[b]; lp[o + 4] = pos[b + 1]; lp[o + 5] = pos[b + 2];
       }
       state.lineGeo.attributes.position.needsUpdate = true;
-      state.lines.material.opacity = 0.42 * w[0] + 0.14 * w[1] + 0.05 * w[2];
+      state.lines.material.opacity = (0.42 * w[0] + 0.14 * w[1] + 0.05 * w[2]) * (1 - cta);
     }
   }
 
-  /* ---------- カメラ：前進 + 旋回 ---------- */
+  /* ---------- 「.inc」の粒子をaccent青へ ---------- */
+  function updateColors() {
+    if (!state.incMask) return;
+    var k = smooth(0.5, 0.9, state.cta);
+    if (Math.abs(k - state.colK) < 0.01) return;
+    state.colK = k;
+    var col = state.points.geometry.attributes.color.array;
+    var nC = state.nCount;
+    for (var i = nC; i < state.count; i++) {
+      var ei = i - nC, ix = i * 3;
+      if (!state.incMask[ei]) continue;
+      col[ix] = state.baseCol[ix] + (ACCENT.r - state.baseCol[ix]) * k;
+      col[ix + 1] = state.baseCol[ix + 1] + (ACCENT.g - state.baseCol[ix + 1]) * k;
+      col[ix + 2] = state.baseCol[ix + 2] + (ACCENT.b - state.baseCol[ix + 2]) * k;
+    }
+    state.points.geometry.attributes.color.needsUpdate = true;
+  }
+
+  /* ---------- カメラ：ロール / オービット / ドリー / FOVパンチ ---------- */
+  // orbit,roll はラジアン。dolly は注視点との距離オフセット。
+  var CAM_KEYS = [
+    { p: 0.00, orbit: 0.00, roll: 0.00, dolly: 0, y: 4, fov: 58 },
+    { p: 0.10, orbit: -0.32, roll: -0.10, dolly: 6, y: 7, fov: 60 },
+    { p: 0.22, orbit: 0.61, roll: 0.20, dolly: -8, y: 2, fov: 53 },
+    { p: 0.34, orbit: -0.52, roll: -0.27, dolly: 10, y: 9, fov: 63 },
+    { p: 0.47, orbit: 0.96, roll: 0.31, dolly: -6, y: 1, fov: 55 },
+    { p: 0.60, orbit: -0.78, roll: -0.36, dolly: 12, y: 10, fov: 64 },
+    { p: 0.72, orbit: 0.45, roll: 0.22, dolly: -10, y: 4, fov: 56 },
+    { p: 0.84, orbit: -0.20, roll: -0.09, dolly: 4, y: 6, fov: 59 },
+    { p: 1.00, orbit: 0.00, roll: 0.00, dolly: -2, y: 5, fov: 58 }
+  ];
+
+  function camAt(p) {
+    var a = CAM_KEYS[0], b = CAM_KEYS[CAM_KEYS.length - 1];
+    for (var i = 0; i < CAM_KEYS.length - 1; i++) {
+      if (p >= CAM_KEYS[i].p && p <= CAM_KEYS[i + 1].p) {
+        a = CAM_KEYS[i]; b = CAM_KEYS[i + 1];
+        break;
+      }
+    }
+    var t = (b.p - a.p) ? clamp01((p - a.p) / (b.p - a.p)) : 0;
+    var e = t * t * (3 - 2 * t); // 長い弧のイージング
+    return {
+      orbit: a.orbit + (b.orbit - a.orbit) * e,
+      roll: a.roll + (b.roll - a.roll) * e,
+      dolly: a.dolly + (b.dolly - a.dolly) * e,
+      y: a.y + (b.y - a.y) * e,
+      fov: a.fov + (b.fov - a.fov) * e
+    };
+  }
+
   function applyCamera() {
     var p = state.progress;
     var cam = state.camera;
-    var z = 62 - p * 94;                        // 62 → -32（Nは-108で前方に）
-    var x = Math.sin(p * Math.PI * 2) * 9 * (1 - smooth(0.75, 0.95, p));
-    var y = 4 + Math.sin(p * Math.PI) * 5 - p * 2;
+    var cs = state.cam;
+    var k = camAt(p);
+    var lerpK = state.reduced ? 1 : 0.06;
 
-    cam.position.x += (x + state.mouseX * 2.4 - cam.position.x) * 0.06;
-    cam.position.y += (y - state.mouseY * 1.6 - cam.position.y) * 0.06;
-    cam.position.z += (z - cam.position.z) * 0.08;
+    var dyn = state.lite ? 0.55 : 1;                 // モバイルは振幅を抑える
+    var settle = smooth(0.5, 0.95, state.cta);       // CTAでは静定してタイポを読ませる
+    var orbit = k.orbit * dyn * (1 - settle);
+    var roll = k.roll * dyn * (1 - settle);
 
-    var look = new THREE.Vector3(0, 2 + smooth(0.75, 1, p) * 4, cam.position.z - 46);
-    cam.lookAt(look);
-    cam.rotation.z += Math.sin(p * Math.PI * 1.5) * 0.045; // わずかなロール
+    // FOVパンチ：隊形遷移の瞬間に広角化 → 戻す
+    var punch = gauss(p, 0.27, 0.05) + gauss(p, 0.74, 0.05);
+    var fov = k.fov + punch * 10 * dyn * (1 - settle);
+
+    var baseZ = 62 - p * 86;                          // 62 → -24
+    var tgtX = 0, tgtY = 2 + smooth(0.72, 1, p) * 10, tgtZ = baseZ - 46;
+    // CTA静定時は「Next.inc」の重心へ
+    tgtX += (-4 * state.ctaScaleX - tgtX) * settle;
+    tgtY += (20 - tgtY) * settle;
+    tgtZ += (-108 - tgtZ) * settle;
+
+    var dist = 46 + k.dolly * dyn;
+    var dx = tgtX + Math.sin(orbit) * dist;
+    var dz = tgtZ + Math.cos(orbit) * dist;
+    var dy = k.y;
+    dx += (0 - dx) * settle;
+    dy += (10 - dy) * settle;
+    dz += (-24 - dz) * settle;
+
+    // マウスパララックス（従来比1.5倍）
+    dx += state.mouseX * 3.6;
+    dy -= state.mouseY * 2.4;
+
+    cs.x += (dx - cs.x) * lerpK;
+    cs.y += (dy - cs.y) * lerpK;
+    cs.z += (dz - cs.z) * (lerpK * 1.25);
+    cs.tx += (tgtX - cs.tx) * lerpK;
+    cs.ty += (tgtY - cs.ty) * lerpK;
+    cs.tz += (tgtZ - cs.tz) * (lerpK * 1.25);
+    cs.roll += (roll - cs.roll) * lerpK;
+    cs.fov += (fov - cs.fov) * lerpK;
+
+    cam.position.set(cs.x, cs.y, cs.z);
+    cam.lookAt(cs.tx, cs.ty, cs.tz);
+    cam.rotation.z += cs.roll;
+    if (Math.abs(cam.fov - cs.fov) > 0.01) {
+      cam.fov = cs.fov;
+      cam.updateProjectionMatrix();
+    }
   }
 
   /* ---------- ループ管理 ---------- */
@@ -287,10 +511,15 @@
     // スクロール進行（Lenis後の実スクロール値から算出）
     var doc = document.documentElement;
     var max = (doc.scrollHeight - window.innerHeight) || 1;
-    state.targetProgress = Math.max(0, Math.min(1, (window.scrollY || window.pageYOffset) / max));
+    state.targetProgress = clamp01((window.scrollY || window.pageYOffset) / max);
     state.progress += (state.targetProgress - state.progress) * 0.07;
 
+    // CTA進行：ScrollTrigger未接続時はスクロール進行から導出
+    if (!state.ctaExternal) state.ctaTarget = smooth(0.9, 0.995, state.targetProgress);
+    state.cta += (state.ctaTarget - state.cta) * 0.08;
+
     applyFormation(t);
+    updateColors();
     applyCamera();
     state.renderer.render(state.scene, state.camera);
   }
@@ -318,6 +547,8 @@
     state.renderer.setSize(w, h, false);
     state.camera.aspect = w / h;
     state.camera.updateProjectionMatrix();
+    // 狭い画面ではCTAタイポグラフィを横方向に圧縮
+    state.ctaScaleX = Math.max(0.58, Math.min(1.05, (w / h) / 1.65));
     if (state.reduced) state.renderer.render(state.scene, state.camera);
   }
 })();

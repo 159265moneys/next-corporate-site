@@ -24,7 +24,13 @@
 
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   if (REDUCED) document.documentElement.classList.add('reduced');
-  if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
+  if (hasGSAP) {
+    gsap.registerPlugin(ScrollTrigger);
+    // iOS Safariのアドレスバー伸縮による高さ変動でピンが暴れないように。
+    // タッチのピンはネイティブスクロール + pinType:'fixed'（既定）で安定させる。
+    // ※ normalizeScroll はアンカー遷移等のプログラムスクロールと干渉するため不使用
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
 
   /* ============ boot ============ */
   function boot() {
@@ -68,6 +74,7 @@
     initKPIs();
     initAB();
     initCTAScramble();
+    initSceneCTA();
     initEngineObservers();
     if (ScrollTrigger.sort) ScrollTrigger.sort();
 
@@ -81,10 +88,14 @@
     });
 
     // リサイズ（デバウンス）
+    // タッチ端末では幅が変わらない限り無視（iOSアドレスバー伸縮対策）
     var rid = null;
+    var lastW = window.innerWidth;
     window.addEventListener('resize', function () {
+      if (COARSE && Math.abs(window.innerWidth - lastW) < 2) return;
       clearTimeout(rid);
       rid = setTimeout(function () {
+        lastW = window.innerWidth;
         Object.keys(engines).forEach(function (k) {
           if (engines[k].resize) engines[k].resize();
         });
@@ -97,6 +108,8 @@
   /* ============ Lenis 慣性スクロール ============ */
   function initLenis() {
     if (!hasLenis) return;
+    // タッチはLenis既定でネイティブスクロールのまま（scrollイベントが
+    // そのままScrollTriggerを駆動し、position:fixedピンが確実に効く）
     lenis = new Lenis({
       duration: 1.25,
       easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, // expo out
@@ -251,10 +264,34 @@
 
   /* ============ ヒーロー開幕 ============ */
   function heroIntro() {
-    scramble($('#hero-title'), 1500);
+    var fills = $$('#hero-title .ht-fill');
+    fills.forEach(function (f) { f.style.opacity = '0'; });
+    gsap.set('#hero-title', { opacity: 1 });
+    if (fills.length >= 3) {
+      scramble(fills[0], 850);
+      setTimeout(function () { scramble(fills[1], 950); }, 240);
+      setTimeout(function () { scramble(fills[2], 1050, drawSwash); }, 430);
+    } else {
+      scramble($('#hero-title'), 1500, drawSwash);
+    }
+    gsap.from('.hero-billboard i', {
+      opacity: 0, duration: 1.5, ease: 'power3.out', stagger: 0.1
+    });
     gsap.to('#phase-00 [data-reveal]', {
       y: 0, opacity: 1, duration: 1.3, ease: 'power4.out', stagger: 0.13, delay: 0.35
     });
+  }
+
+  /* キーフレーズ下のアクセント・スウォッシュ（SVGストローク描画） */
+  function drawSwash() {
+    var path = $('.ht-swash path');
+    if (!path) return;
+    var L = 400;
+    try { L = path.getTotalLength(); } catch (e) { /* noop */ }
+    path.style.strokeDasharray = L;
+    path.style.strokeDashoffset = L;
+    path.style.opacity = '1';
+    gsap.to(path, { strokeDashoffset: 0, duration: 0.85, ease: 'power3.inOut' });
   }
 
   function initHeroParallax() {
@@ -392,12 +429,15 @@
   /* ============ PHASE 02：設計図の横ピン留めスクロール（ピン2） ============ */
   function initBlueprint() {
     var track = $('#bp-track');
-    var fcds = $$('#flowchart .fcd');
+    var svg = $('#flowchart');
     var fcls = $$('#flowchart .fcl');
+    var nodes = $$('#flowchart .fnode');
+    var pulses = $$('#flowchart .fpl');
 
-    // 描画順（ノード→コネクタを視覚順に）
-    var order = [0, 7, 1, 8, 2, 17, 9, 10, 3, 4, 11, 12, 5, 13, 6, 14, 15, 16];
-    var seq = order.map(function (i) { return fcds[i]; }).filter(Boolean);
+    // 描画順は data-d 属性で明示（ノード→コネクタを視覚順に）
+    var seq = $$('#flowchart [data-d]').sort(function (a, b) {
+      return (+a.getAttribute('data-d')) - (+b.getAttribute('data-d'));
+    });
 
     var lens = seq.map(function (el) {
       var L = 0;
@@ -407,33 +447,39 @@
       el.style.fillOpacity = 0;
       return L;
     });
+    var locals = new Array(seq.length);
 
     function drawTo(p) {
       var n = seq.length;
       seq.forEach(function (el, i) {
         var t0 = (i / n) * 0.86;
         var local = clamp01((p - t0) / 0.16);
+        locals[i] = local;
         el.style.strokeDashoffset = lens[i] * (1 - local);
         el.style.fillOpacity = local;
       });
+      // ノードは描画完了で「点灯」（ブラケット+アイコン+発光）
+      nodes.forEach(function (g) {
+        var d = +g.getAttribute('data-lit');
+        g.classList.toggle('lit', (locals[d] || 0) >= 0.999);
+      });
+      // コネクタ完成後、光のパルスが流れ始める
+      pulses.forEach(function (pl) {
+        var d = +pl.getAttribute('data-for');
+        pl.classList.toggle('on', (locals[d] || 0) >= 0.999);
+      });
+      if (svg) {
+        svg.classList.toggle('live', p > 0.04);
+        svg.classList.toggle('deep', p > 0.58);
+      }
       fcls.forEach(function (el, i) {
         var t0 = 0.08 + (i / fcls.length) * 0.8;
         el.style.opacity = clamp01((p - t0) / 0.08);
       });
     }
 
-    if (MOBILE) {
-      // 縦積み: 表示されたら一気に描画
-      var obj = { p: 0 };
-      ScrollTrigger.create({
-        trigger: '.hpanel-chart', start: 'top 80%', once: true,
-        onEnter: function () {
-          gsap.to(obj, { p: 1, duration: 3.4, ease: 'power2.inOut', onUpdate: function () { drawTo(obj.p); } });
-        }
-      });
-      return;
-    }
-
+    // モバイルもピン留め横スクロール：縦入力を横進行に100%変換し、
+    // 横移動が完了するまで縦方向へは進ませない（縦横同時進行の禁止）
     var getDist = function () { return track.scrollWidth - window.innerWidth; };
     gsap.to(track, {
       x: function () { return -getDist(); },
@@ -460,29 +506,8 @@
     var countEl = $('#belt-count');
     var spacing = MOBILE ? 260 : 340;
 
-    if (MOBILE) {
-      // 軽量フォールバック：自動ループ + IOでスタンプ
-      cards.forEach(function (c, i) { gsap.set(c, { x: (i - 1.5) * spacing, rotationY: -14, transformPerspective: 800 }); });
-      var wrapX = gsap.utils.wrap(-2 * spacing, (cards.length - 2) * spacing);
-      var marquee = gsap.to(cards, {
-        x: '-=' + spacing * cards.length,
-        duration: 16, ease: 'none', repeat: -1, paused: true,
-        modifiers: { x: function (x) { return wrapX(parseFloat(x)) + 'px'; } }
-      });
-      ScrollTrigger.create({
-        trigger: '#belt', start: 'top 90%', end: 'bottom top',
-        onToggle: function (self) { self.isActive ? marquee.play() : marquee.pause(); }
-      });
-      ScrollTrigger.create({
-        trigger: '#belt', start: 'top 75%', once: true,
-        onEnter: function () {
-          gsap.to('.stamp', { scale: 1, opacity: 1, duration: 0.45, ease: 'power4.in', stagger: 0.4 });
-          cards.forEach(function (c, i) { setTimeout(function () { c.classList.add('done'); }, i * 400); });
-        }
-      });
-      return;
-    }
-
+    // モバイルも同一実装：ピン留め + スクラブで横流し
+    // （自動マーキーは縦スクロールと同時進行して見逃されるため廃止）
     var starts = cards.map(function (c, i) {
       var sx = window.innerWidth * 0.42 + i * spacing;
       gsap.set(c, { x: sx, rotationY: -22, rotationX: 6, transformPerspective: 1000 });
@@ -574,6 +599,7 @@
     });
   }
 
+  // 統一階層：数値=大（そのまま）/ 単位・接頭辞=中（<em>で一段下げ）
   function kpiFormat(el, v) {
     var dec = parseInt(el.getAttribute('data-kpi-decimal') || '0', 10);
     var prefix = el.getAttribute('data-kpi-prefix') || '';
@@ -581,7 +607,7 @@
     var plus = (el.getAttribute('data-kpi') || '').trim().charAt(0) === '+';
     var s = v.toFixed(dec);
     if (plus && v > 0) s = '+' + s;
-    return prefix + s + suffix;
+    return (prefix ? '<em>' + prefix + '</em>' : '') + s + (suffix ? '<em>' + suffix + '</em>' : '');
   }
   function initKPIs() {
     $$('[data-kpi]').forEach(function (el) {
@@ -592,7 +618,7 @@
         onEnter: function () {
           gsap.to(obj, {
             v: target, duration: 1.9, ease: 'expo.out',
-            onUpdate: function () { el.textContent = kpiFormat(el, obj.v); }
+            onUpdate: function () { el.innerHTML = kpiFormat(el, obj.v); }
           });
         }
       });
@@ -626,6 +652,18 @@
     ScrollTrigger.create({
       trigger: '#cta', start: 'top 68%', once: true,
       onEnter: function () { scramble($('#cta-title'), 1300); }
+    });
+  }
+
+  /* ============ CTA：粒子「Next.inc」収束の進行をシーンへ供給 ============ */
+  function initSceneCTA() {
+    if (!window.NextScene || !window.NextScene.setCTAProgress) return;
+    ScrollTrigger.create({
+      trigger: '#cta',
+      start: 'top 85%',
+      end: 'bottom bottom',
+      scrub: 0.3,
+      onUpdate: function (self) { window.NextScene.setCTAProgress(self.progress); }
     });
   }
 
@@ -674,7 +712,7 @@
       el.textContent = el.getAttribute('data-count');
     });
     $$('[data-kpi]').forEach(function (el) {
-      el.textContent = kpiFormat(el, parseFloat(el.getAttribute('data-kpi')));
+      el.innerHTML = kpiFormat(el, parseFloat(el.getAttribute('data-kpi')));
     });
     var bc = $('#belt-count');
     if (bc) bc.textContent = '5';

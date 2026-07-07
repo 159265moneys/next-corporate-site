@@ -14,7 +14,7 @@
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+JP:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@500;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -79,9 +79,18 @@
 
   <!-- ============ PHASE 00 / HERO ============ -->
   <section id="phase-00" class="sec sec-hero" data-phase="0">
-    <div class="wrap">
-      <p class="micro hero-micro" data-reveal>PHASE 00 — AIDX COMPANY / TOKYO</p>
-      <h1 class="hero-title" id="hero-title" data-text="AIを、導入で終わらせない。">AIを、導入で終わらせない。</h1>
+    <div class="wrap hero-wrap">
+      <div class="hero-billboard" aria-hidden="true">
+        <i class="hb-glow"></i>
+        <i class="hb-plate"></i>
+        <i class="hb-band hb-band-a"></i>
+        <i class="hb-band hb-band-b"></i>
+      </div>
+      <p class="micro chip hero-micro" data-reveal>PHASE 00 — AIDX COMPANY / TOKYO</p>
+      <h1 class="hero-title" id="hero-title">
+        <span class="ht-line ht-l1"><span class="ht-fill" data-text="AIを、">AIを、</span></span>
+        <span class="ht-line ht-l2"><span class="ht-fill" data-text="導入で">導入で</span><span class="ht-key"><svg class="ht-swash" viewBox="0 0 360 32" preserveAspectRatio="none" aria-hidden="true"><path d="M8 22 C 90 29, 220 5, 352 15" fill="none"/></svg><span class="ht-fill" data-text="終わらせない。">終わらせない。</span></span></span>
+      </h1>
       <p class="hero-sub" data-reveal>株式会社nextは、AI導入から人事・営業・採用・マーケティングの自動化までを一気通貫で実装するAIDXカンパニーです。</p>
       <p class="hero-tagline" data-reveal><span class="tagline-tick" aria-hidden="true"></span>事業の「次」を、AIで実装する。</p>
       <div class="hero-cta" data-reveal>
@@ -99,7 +108,7 @@
   <!-- ============ PHASE 01 / 課題提起 ============ -->
   <section id="phase-01" class="sec sec-problem" data-phase="1">
     <div class="wrap problem-wrap">
-      <p class="micro" data-reveal>PHASE 01 — THE ISSUE / WHY AI FAILS</p>
+      <p class="micro chip" data-reveal>PHASE 01 — THE ISSUE / WHY AI FAILS</p>
       <div class="problem-stage">
         <div class="problem-num" id="problem-num" aria-hidden="true">
           <span id="problem-counter">0</span><span class="problem-unit">%</span>
@@ -117,50 +126,148 @@
     <div class="hwrap">
       <div class="htrack" id="bp-track">
         <div class="hpanel hpanel-intro">
-          <p class="micro">PHASE 02 — AI IMPLEMENTATION / BLUEPRINT</p>
+          <p class="micro chip">PHASE 02 — AI IMPLEMENTATION / BLUEPRINT</p>
           <span class="ghost-num" aria-hidden="true">01</span>
+          <div class="biz-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v2M12 18.2v2M3.8 12h2M18.2 12h2"/><path class="ic-a" d="M9.2 14.8 L11 11 L14.8 9.2 L13 13 Z"/></svg></div>
           <h2 class="sec-title">現場に定着するAIを。</h2>
           <p class="sec-sub">ツール選定で終わらせず、業務フローの再設計と社内浸透まで伴走します。</p>
           <p class="hpanel-hint" aria-hidden="true">DRAG THROUGH THE BLUEPRINT →</p>
         </div>
         <div class="hpanel hpanel-chart">
           <svg id="flowchart" viewBox="0 0 1900 560" fill="none" aria-label="AI導入の設計図フローチャート">
+            <defs>
+              <linearGradient id="ndg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FEFEFF"/>
+                <stop offset="1" stop-color="#E2EBF7"/>
+              </linearGradient>
+              <linearGradient id="ndga" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#F2F7FE"/>
+                <stop offset="1" stop-color="#D7E5FA"/>
+              </linearGradient>
+              <radialGradient id="fsoft">
+                <stop offset="0" stop-color="rgba(37,99,235,.09)"/>
+                <stop offset="1" stop-color="rgba(37,99,235,0)"/>
+              </radialGradient>
+            </defs>
+            <!-- 背景装飾：ぼかし薄青円 + 目盛りティック -->
+            <g class="fdeco" aria-hidden="true">
+              <circle cx="435" cy="270" r="155" fill="url(#fsoft)"/>
+              <circle cx="1025" cy="255" r="190" fill="url(#fsoft)"/>
+              <circle cx="1660" cy="285" r="145" fill="url(#fsoft)"/>
+              <path class="frtl" d="M40 16 H1781"/>
+              <path class="frt" d="M45 16 H1781"/>
+              <path class="frtl" d="M40 542 H1781"/>
+              <path class="frt" d="M45 542 H1781"/>
+              <text class="frm" x="40" y="38">GRID 100 — BLUEPRINT SHEET NO.02</text>
+              <text class="frm" x="1780" y="530" text-anchor="end">NEXT INC. — PROCESS DRAWING</text>
+            </g>
             <!-- ノード -->
-            <rect class="fcd" x="40" y="230" width="210" height="100" rx="2"/>
-            <rect class="fcd" x="330" y="230" width="210" height="100" rx="2"/>
-            <polygon class="fcd" points="730,190 850,280 730,370 610,280"/>
-            <rect class="fcd" x="920" y="90" width="210" height="100" rx="2"/>
-            <rect class="fcd" x="920" y="370" width="210" height="100" rx="2"/>
-            <rect class="fcd" x="1230" y="230" width="210" height="100" rx="2"/>
-            <rect class="fcd fcd-final" x="1540" y="230" width="240" height="100" rx="2"/>
+            <g class="fnode" data-lit="0">
+              <rect class="fcd" data-d="0" x="40" y="230" width="210" height="100" rx="10" fill="url(#ndg)"/>
+              <path class="fcb" d="M35 239 V225 H49 M241 225 H255 V239 M255 321 V335 H241 M49 335 H35 V321"/>
+              <g class="fic" transform="translate(56,244)">
+                <circle cx="10" cy="10" r="6.2"/>
+                <path d="M14.6 14.6 L19 19"/>
+                <circle class="ic-a" cx="10" cy="10" r="2.2"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="2">
+              <rect class="fcd" data-d="2" x="330" y="230" width="210" height="100" rx="10" fill="url(#ndg)"/>
+              <path class="fcb" d="M325 239 V225 H339 M531 225 H545 V239 M545 321 V335 H531 M339 335 H325 V321"/>
+              <g class="fic" transform="translate(346,244)">
+                <circle cx="5" cy="5" r="2.6"/>
+                <circle cx="17" cy="5" r="2.6"/>
+                <circle class="ic-a" cx="11" cy="17" r="2.6"/>
+                <path d="M7.6 5 H14.4 M6.4 7.2 L9.8 14.6 M15.6 7.2 L12.2 14.6"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="4">
+              <polygon class="fcd" data-d="4" points="730,190 850,280 730,370 610,280" fill="url(#ndg)"/>
+              <path class="fcb" d="M716 197 L730 186 L744 197 M716 363 L730 374 L744 363"/>
+              <g class="fic" transform="translate(718,214)">
+                <circle class="ic-a" cx="12" cy="4" r="2"/>
+                <path d="M12 6 V11 M12 11 L6 17 M12 11 L18 17"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="6">
+              <rect class="fcd" data-d="6" x="920" y="90" width="210" height="100" rx="10" fill="url(#ndg)"/>
+              <path class="fcb" d="M915 99 V85 H929 M1121 85 H1135 V99 M1135 181 V195 H1121 M929 195 H915 V181"/>
+              <g class="fic" transform="translate(936,104)">
+                <circle cx="11" cy="11" r="5"/>
+                <circle class="ic-a" cx="11" cy="11" r="1.6"/>
+                <path d="M11 3.4 V6 M11 16 V18.6 M3.4 11 H6 M16 11 H18.6 M5.6 5.6 L7.5 7.5 M14.5 14.5 L16.4 16.4 M16.4 5.6 L14.5 7.5 M7.5 14.5 L5.6 16.4"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="8">
+              <rect class="fcd" data-d="8" x="920" y="370" width="210" height="100" rx="10" fill="url(#ndg)"/>
+              <path class="fcb" d="M915 379 V365 H929 M1121 365 H1135 V379 M1135 461 V475 H1121 M929 475 H915 V461"/>
+              <g class="fic" transform="translate(936,384)">
+                <path d="M4 18.5 L6 12.5 L15 3.5 L18.5 7 L9.5 16 Z"/>
+                <path class="ic-a" d="M13 5.5 L16.5 9"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="11">
+              <rect class="fcd" data-d="11" x="1230" y="230" width="210" height="100" rx="10" fill="url(#ndg)"/>
+              <path class="fcb" d="M1225 239 V225 H1239 M1431 225 H1445 V239 M1445 321 V335 H1431 M1239 335 H1225 V321"/>
+              <g class="fic" transform="translate(1246,244)">
+                <circle cx="8" cy="7" r="3.2"/>
+                <path d="M2.5 19 C2.5 14.6 13.5 14.6 13.5 19"/>
+                <path class="ic-a" d="M16 6.5 H21 M18.5 4 V9"/>
+              </g>
+            </g>
+            <g class="fnode" data-lit="13">
+              <rect class="fcd fcd-final" data-d="13" x="1540" y="230" width="240" height="100" rx="10" fill="url(#ndga)"/>
+              <path class="fcb fcb-a" d="M1535 239 V225 H1549 M1771 225 H1785 V239 M1785 321 V335 H1771 M1549 335 H1535 V321"/>
+              <g class="fic" transform="translate(1556,244)">
+                <rect x="3" y="4" width="18" height="13" rx="1.5"/>
+                <path class="ic-a" d="M6 12.5 L9.5 9 L12 11.5 L17.5 6.5"/>
+                <path d="M9 20.5 H15"/>
+              </g>
+            </g>
             <!-- コネクタ -->
-            <path class="fcd" d="M250 280 L330 280"/>
-            <path class="fcd" d="M540 280 L610 280"/>
-            <path class="fcd" d="M850 280 L884 280 L884 140 L920 140"/>
-            <path class="fcd" d="M850 280 L884 280 L884 420 L920 420"/>
-            <path class="fcd" d="M1130 140 L1184 140 L1184 280 L1230 280"/>
-            <path class="fcd" d="M1130 420 L1184 420 L1184 280"/>
-            <path class="fcd" d="M1440 280 L1540 280"/>
-            <path class="fcd fcd-loop" d="M1660 230 L1660 48 L730 48 L730 190"/>
+            <path class="fcd" data-d="1" d="M250 280 L330 280"/>
+            <path class="fcd" data-d="3" d="M540 280 L610 280"/>
+            <path class="fcd" data-d="5" d="M850 280 L884 280 L884 140 L920 140"/>
+            <path class="fcd" data-d="7" d="M850 280 L884 280 L884 420 L920 420"/>
+            <path class="fcd" data-d="9" d="M1130 140 L1184 140 L1184 280 L1230 280"/>
+            <path class="fcd" data-d="10" d="M1130 420 L1184 420 L1184 280"/>
+            <path class="fcd" data-d="12" d="M1440 280 L1540 280"/>
+            <path class="fcd fcd-loop" data-d="14" d="M1660 230 L1660 48 L730 48 L730 190"/>
+            <!-- コネクタ上を流れる光のパルス -->
+            <path class="fpl" data-for="1" d="M250 280 L330 280"/>
+            <path class="fpl" data-for="3" d="M540 280 L610 280"/>
+            <path class="fpl" data-for="5" d="M850 280 L884 280 L884 140 L920 140" style="animation-duration:3.1s"/>
+            <path class="fpl" data-for="7" d="M850 280 L884 280 L884 420 L920 420" style="animation-duration:3.4s"/>
+            <path class="fpl" data-for="9" d="M1130 140 L1184 140 L1184 280 L1230 280" style="animation-duration:3.2s"/>
+            <path class="fpl" data-for="10" d="M1130 420 L1184 420 L1184 280" style="animation-duration:2.9s"/>
+            <path class="fpl" data-for="12" d="M1440 280 L1540 280"/>
+            <path class="fpl fpl-loop" data-for="14" d="M1660 230 L1660 48 L730 48 L730 190" style="animation-duration:4.6s"/>
+            <!-- ジャンクション（発光ドット + ハロー） -->
+            <g class="fjn-g" aria-hidden="true">
+              <circle class="fjh" cx="884" cy="280" r="7"/>
+              <circle class="fjn" cx="884" cy="280" r="3.4"/>
+              <circle class="fjh" cx="1184" cy="280" r="7"/>
+              <circle class="fjn" cx="1184" cy="280" r="3.4"/>
+            </g>
             <!-- 寸法線（設計図ディテール） -->
-            <path class="fcd fcd-dim" d="M40 356 L40 372 M250 356 L250 372 M40 364 L250 364"/>
-            <path class="fcd fcd-dim" d="M1540 356 L1540 372 M1780 356 L1780 372 M1540 364 L1780 364"/>
-            <circle class="fcd fcd-dim" cx="730" cy="280" r="126"/>
+            <path class="fcd fcd-dim" data-d="15" d="M40 356 L40 372 M250 356 L250 372 M40 364 L250 364"/>
+            <path class="fcd fcd-dim" data-d="16" d="M1540 356 L1540 372 M1780 356 L1780 372 M1540 364 L1780 364"/>
+            <circle class="fcd fcd-dim" data-d="17" cx="730" cy="280" r="126"/>
             <!-- ラベル -->
-            <text class="fcl fct" x="145" y="272" text-anchor="middle">業務ヒアリング</text>
-            <text class="fcl fcm" x="145" y="296" text-anchor="middle">BP-01 / AUDIT</text>
-            <text class="fcl fct" x="435" y="272" text-anchor="middle">業務フロー分解</text>
-            <text class="fcl fcm" x="435" y="296" text-anchor="middle">BP-02 / MAPPING</text>
-            <text class="fcl fct" x="730" y="272" text-anchor="middle">自動化判定</text>
-            <text class="fcl fcm" x="730" y="296" text-anchor="middle">BP-03 / DECISION</text>
-            <text class="fcl fct" x="1025" y="132" text-anchor="middle">ツール選定・PoC</text>
-            <text class="fcl fcm" x="1025" y="156" text-anchor="middle">BP-04A / AUTOMATE</text>
-            <text class="fcl fct" x="1025" y="412" text-anchor="middle">フロー再設計</text>
-            <text class="fcl fcm" x="1025" y="436" text-anchor="middle">BP-04B / REDESIGN</text>
-            <text class="fcl fct" x="1335" y="272" text-anchor="middle">社内浸透・研修</text>
-            <text class="fcl fcm" x="1335" y="296" text-anchor="middle">BP-05 / ONBOARD</text>
-            <text class="fcl fct fct-final" x="1660" y="272" text-anchor="middle">定着モニタリング</text>
-            <text class="fcl fcm" x="1660" y="296" text-anchor="middle">BP-06 / RETENTION</text>
+            <text class="fcl fct" x="145" y="288" text-anchor="middle">業務ヒアリング</text>
+            <text class="fcl fcm" x="145" y="310" text-anchor="middle">BP-01 / AUDIT · SCAN</text>
+            <text class="fcl fct" x="435" y="288" text-anchor="middle">業務フロー分解</text>
+            <text class="fcl fcm" x="435" y="310" text-anchor="middle">BP-02 / MAPPING</text>
+            <text class="fcl fct" x="730" y="282" text-anchor="middle">自動化判定</text>
+            <text class="fcl fcm" x="730" y="304" text-anchor="middle">BP-03 / DECISION</text>
+            <text class="fcl fct" x="1032" y="148" text-anchor="middle">ツール選定・PoC</text>
+            <text class="fcl fcm" x="1032" y="170" text-anchor="middle">BP-04A / AUTOMATE</text>
+            <text class="fcl fct" x="1032" y="428" text-anchor="middle">フロー再設計</text>
+            <text class="fcl fcm" x="1032" y="450" text-anchor="middle">BP-04B / REDESIGN</text>
+            <text class="fcl fct" x="1335" y="288" text-anchor="middle">社内浸透・研修</text>
+            <text class="fcl fcm" x="1335" y="310" text-anchor="middle">BP-05 / ONBOARD</text>
+            <text class="fcl fct fct-final" x="1660" y="288" text-anchor="middle">定着モニタリング</text>
+            <text class="fcl fcm" x="1660" y="310" text-anchor="middle">BP-06 / RETENTION · DEPLOY</text>
             <text class="fcl fcm" x="866" y="128" text-anchor="end">YES → 自動化</text>
             <text class="fcl fcm" x="866" y="444" text-anchor="end">NO → 人の設計へ</text>
             <text class="fcl fcm" x="1195" y="36">改善ループ / CONTINUOUS TUNING</text>
@@ -185,8 +292,9 @@
   <section id="phase-03" class="sec sec-conveyor" data-phase="3">
     <div class="conveyor-pin">
       <div class="wrap conveyor-head">
-        <p class="micro" data-reveal>PHASE 03 — HR AUTOMATION / CONVEYOR</p>
+        <p class="micro chip" data-reveal>PHASE 03 — HR AUTOMATION / CONVEYOR</p>
         <span class="ghost-num" aria-hidden="true">02</span>
+        <div class="biz-badge" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="12" height="15" rx="1.5"/><path d="M8 7.5h6M8 10.5h6M8 13.5h3.5"/><path class="ic-a" d="M13.5 16 L15.5 18 L19.5 13.8"/></svg></div>
         <h2 class="sec-title" data-reveal>人事業務を、まるごと自動運転に。</h2>
         <p class="sec-sub" data-reveal>応募対応から面接調整、入社手続きまで。人事はもう、判断だけしてください。</p>
       </div>
@@ -209,14 +317,15 @@
   <section id="phase-04" class="sec sec-radar dark" data-phase="4">
     <div class="wrap radar-wrap">
       <div class="radar-copy">
-        <p class="micro micro-light" data-reveal>PHASE 04 — AI SCOUT / RADAR</p>
+        <p class="micro chip micro-light" data-reveal>PHASE 04 — AI SCOUT / RADAR</p>
         <span class="ghost-num ghost-light" aria-hidden="true">03</span>
+        <div class="biz-badge biz-badge-dark" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.6"/><path d="M12 12 L18.2 5.8"/><circle class="ic-a ic-fill" cx="15" cy="14.6" r="1.5"/></svg></div>
         <h2 class="sec-title" data-reveal>会いたい人材に、<br>AIが先に届く。</h2>
         <p class="sec-sub" data-reveal>数百万のデータベースから、返信される文面で、24時間アプローチし続けます。</p>
         <ul class="radar-stats" data-reveal>
-          <li><b data-count="24">0</b><span>H — 稼働時間 / 無休</span></li>
-          <li><b><span data-count="38">0</span>%</b><span>返信を前提に設計された文面</span></li>
-          <li><b>10<sup>6</sup>+</b><span>タレントデータベース</span></li>
+          <li><span class="rs-no">SCT-01</span><b><i data-count="24">0</i><em>H</em></b><span class="rs-label">稼働時間 / 無休</span></li>
+          <li><span class="rs-no">SCT-02</span><b><i data-count="38">0</i><em>%</em></b><span class="rs-label">返信を前提に設計された文面</span></li>
+          <li><span class="rs-no">SCT-03</span><b>10<sup>6</sup><em>+</em></b><span class="rs-label">タレントデータベース</span></li>
         </ul>
       </div>
       <div class="radar-stage" data-reveal>
@@ -230,8 +339,9 @@
   <section id="phase-05" class="sec sec-terminal" data-phase="5">
     <div class="wrap term-wrap">
       <div class="term-copy">
-        <p class="micro" data-reveal>PHASE 05 — FORM OUTREACH / TERMINAL</p>
+        <p class="micro chip" data-reveal>PHASE 05 — FORM OUTREACH / TERMINAL</p>
         <span class="ghost-num" aria-hidden="true">04</span>
+        <div class="biz-badge" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="1.5"/><path class="ic-a" d="M6.5 9.5 L9.8 12.2 L6.5 15"/><path d="M12 15.5 H17.5"/></svg></div>
         <h2 class="sec-title" data-reveal>商談は、寝ている間に生まれる。</h2>
         <p class="sec-sub" data-reveal>ターゲット抽出から文面生成・送信まで全自動。営業は商談だけに集中できます。</p>
         <div class="term-kpi" data-reveal>
@@ -258,8 +368,9 @@
   <!-- ============ PHASE 06 / ブルーカラー採用支援 Isometric ============ -->
   <section id="phase-06" class="sec sec-iso" data-phase="6">
     <div class="wrap">
-      <p class="micro" data-reveal>PHASE 06 — BLUE-COLLAR RECRUITING / ISOMETRIC</p>
+      <p class="micro chip" data-reveal>PHASE 06 — BLUE-COLLAR RECRUITING / ISOMETRIC</p>
       <span class="ghost-num" aria-hidden="true">05</span>
+      <div class="biz-badge" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><path d="M5 14.5 a7 7 0 0 1 14 0"/><path d="M3.5 17.5 h17 M5 14.5 v3 M19 14.5 v3"/><path class="ic-a" d="M12 4 v3.5"/></svg></div>
       <h2 class="sec-title" data-reveal>現場を支える人を、<br class="sp">現場を知るAIで。</h2>
       <p class="sec-sub" data-reveal>建設・運送・介護・警備。4業界に特化した採用設計で「応募が来ない」を終わらせます。</p>
     </div>
@@ -278,8 +389,9 @@
   <section id="phase-07" class="sec sec-citation" data-phase="7">
     <div class="wrap cite-wrap">
       <div class="cite-copy">
-        <p class="micro" data-reveal>PHASE 07 — AIO / CITATION</p>
+        <p class="micro chip" data-reveal>PHASE 07 — AIO / CITATION</p>
         <span class="ghost-num" aria-hidden="true">06</span>
+        <div class="biz-badge" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><path d="M4 5.5 h16 v10 h-8.5 L8 19 v-3.5 H4 Z"/><path class="ic-a" d="M8.5 10.5 h2.4 M13 10.5 h2.4"/></svg></div>
         <h2 class="sec-title" data-reveal>検索の次は、AIに<br>「選ばれる」時代。</h2>
         <p class="sec-sub" data-reveal>ChatGPTやAI検索が引用するコンテンツ設計へ。SEOの次の一手を、今。</p>
       </div>
@@ -305,8 +417,9 @@
   <!-- ============ PHASE 08 / AI広告運用 Dashboard ============ -->
   <section id="phase-08" class="sec sec-dashboard" data-phase="8">
     <div class="wrap">
-      <p class="micro" data-reveal>PHASE 08 — AD OPERATIONS / DASHBOARD</p>
+      <p class="micro chip" data-reveal>PHASE 08 — AD OPERATIONS / DASHBOARD</p>
       <span class="ghost-num" aria-hidden="true">07</span>
+      <div class="biz-badge" aria-hidden="true" data-reveal><svg viewBox="0 0 24 24"><path d="M4 20 h16 M6.5 20 v-5 M11 20 v-8.5 M15.5 20 v-3.5"/><path class="ic-a" d="M5.5 9.5 L10 5.5 L13 8 L18 3.5 M18 3.5 h-3 M18 3.5 v3"/></svg></div>
       <h2 class="sec-title" data-reveal>広告の意思決定から、勘を外す。</h2>
       <p class="sec-sub" data-reveal>GPT広告の運用設計・代行。生成AI時代の獲得チャネルをいち早く事業の武器に。</p>
       <div class="dash-grid">
@@ -335,7 +448,7 @@
   <!-- ============ 導入フロー ============ -->
   <section id="flow" class="sec sec-flow">
     <div class="wrap">
-      <p class="micro" data-reveal>OPERATION FLOW — FROM AUDIT TO RETENTION</p>
+      <p class="micro chip" data-reveal>OPERATION FLOW — FROM AUDIT TO RETENTION</p>
       <h2 class="sec-title" data-reveal>設計図が、稼働するまで。</h2>
       <div class="flow-stage">
         <svg id="flow-svg" viewBox="0 0 1200 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -358,7 +471,7 @@
   <!-- ============ 会社概要 ============ -->
   <section id="company" class="sec sec-company">
     <div class="wrap wrap-narrow">
-      <p class="micro" data-reveal>COMPANY — CORPORATE PROFILE</p>
+      <p class="micro chip" data-reveal>COMPANY — CORPORATE PROFILE</p>
       <h2 class="sec-title" data-reveal>会社概要</h2>
       <dl class="company-table" data-reveal>
         <div><dt>社名</dt><dd>株式会社next</dd></div>
@@ -374,7 +487,7 @@
   <!-- ============ CTA ============ -->
   <section id="cta" class="sec sec-cta">
     <div class="wrap cta-wrap">
-      <p class="micro" data-reveal>FINAL PHASE — ALL SYSTEMS CONVERGED</p>
+      <p class="micro chip" data-reveal>FINAL PHASE — ALL SYSTEMS CONVERGED</p>
       <h2 class="cta-title" id="cta-title" data-text="次の打ち手は、決まっていますか。">次の打ち手は、決まっていますか。</h2>
       <div class="cta-actions" data-reveal>
         <a class="btn btn-primary btn-xl magnet" href="mailto:info@n-ext.co.jp?subject=%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87%E3%81%AE%E3%81%94%E4%BE%9D%E9%A0%BC">無料相談する</a>
@@ -386,6 +499,11 @@
 </main>
 
 <footer class="site-footer">
+  <div class="footer-ticker" aria-hidden="true">
+    <div class="ft-track">
+      <span>AI IMPLEMENTATION — HR AUTOMATION — AI SCOUT — FORM OUTREACH — BLUE-COLLAR RECRUITING — AIO / LLMO — AD OPERATIONS — NEXT.INC / TOKYO — </span><span>AI IMPLEMENTATION — HR AUTOMATION — AI SCOUT — FORM OUTREACH — BLUE-COLLAR RECRUITING — AIO / LLMO — AD OPERATIONS — NEXT.INC / TOKYO — </span>
+    </div>
+  </div>
   <div class="wrap footer-inner">
     <span class="footer-brand">n<span class="brand-dash">—</span>ext</span>
     <span class="footer-note micro">BLUEPRINT IN OPERATION — TOKYO, JP</span>
