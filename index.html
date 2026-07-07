@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>株式会社next | AIを、導入で終わらせない。</title>
+<meta name="description" content="株式会社nextは、AI導入から人事・営業・採用・マーケティングの自動化までを一気通貫で実装するAIDXカンパニーです。事業の「次」を、AIで実装する。">
+<meta property="og:title" content="株式会社next | AIを、導入で終わらせない。">
+<meta property="og:description" content="AI導入から人事・営業・採用・マーケティングの自動化までを一気通貫で実装するAIDXカンパニー。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://n-ext.co.jp">
+<meta name="theme-color" content="#FAFBFC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FAFBFC'/%3E%3Cpath d='M8 24V10 M8 14c0-5 10-5 10 0v10 M22 24h4' stroke='%232563EB' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+JP:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ LOADER ============ -->
+<div id="loader" class="loader" aria-hidden="true">
+  <div class="loader-grid"></div>
+  <div class="loader-inner">
+    <svg id="loader-logo" viewBox="0 0 300 90" fill="none" aria-label="n—ext">
+      <path class="ll" d="M20 68 L20 26"/>
+      <path class="ll" d="M20 42 C20 26 46 26 46 42 L46 68"/>
+      <path class="ll ll-dash" d="M62 49 L88 49"/>
+      <path class="ll" d="M104 46 L128 46"/>
+      <path class="ll" d="M128 46 C128 29 104 27 104 46 C104 63 122 65 129 55"/>
+      <path class="ll" d="M144 32 L168 68"/>
+      <path class="ll" d="M168 32 L144 68"/>
+      <path class="ll" d="M190 24 L190 60 C190 68 198 70 205 66"/>
+      <path class="ll" d="M180 36 L203 36"/>
+    </svg>
+    <div class="loader-meta">
+      <span class="loader-label">BLUEPRINT LOADING</span>
+      <span class="loader-pct"><span id="loader-pct">00</span>%</span>
+    </div>
+    <div class="loader-bar"><span id="loader-bar-fill"></span></div>
+  </div>
+</div>
+
+<!-- ============ FIXED LAYERS ============ -->
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<header class="site-header">
+  <a class="brand magnet" href="#phase-00" data-scrollto>n<span class="brand-dash">—</span>ext</a>
+  <nav class="gnav" aria-label="グローバルナビゲーション">
+    <a href="#phase-02" data-scrollto>SERVICES</a>
+    <a href="#flow" data-scrollto>FLOW</a>
+    <a href="#company" data-scrollto>COMPANY</a>
+  </nav>
+  <a class="btn btn-primary btn-sm magnet" href="mailto:info@n-ext.co.jp?subject=%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87%E3%81%AE%E3%81%94%E4%BE%9D%E9%A0%BC">無料相談する</a>
+</header>
+
+<nav class="phase-rail" aria-label="フェーズナビゲーション">
+  <span class="rail-line" aria-hidden="true"></span>
+  <a href="#phase-00" data-scrollto data-rail="0"><i>00</i><em>HERO</em></a>
+  <a href="#phase-01" data-scrollto data-rail="1"><i>01</i><em>ISSUE</em></a>
+  <a href="#phase-02" data-scrollto data-rail="2"><i>02</i><em>BLUEPRINT</em></a>
+  <a href="#phase-03" data-scrollto data-rail="3"><i>03</i><em>CONVEYOR</em></a>
+  <a href="#phase-04" data-scrollto data-rail="4"><i>04</i><em>RADAR</em></a>
+  <a href="#phase-05" data-scrollto data-rail="5"><i>05</i><em>TERMINAL</em></a>
+  <a href="#phase-06" data-scrollto data-rail="6"><i>06</i><em>ISOMETRIC</em></a>
+  <a href="#phase-07" data-scrollto data-rail="7"><i>07</i><em>CITATION</em></a>
+  <a href="#phase-08" data-scrollto data-rail="8"><i>08</i><em>DASHBOARD</em></a>
+</nav>
+
+<svg id="spine" class="spine" aria-hidden="true" preserveAspectRatio="none">
+  <path id="spine-path" d=""/>
+  <circle id="spine-tip" r="3.5"/>
+</svg>
+
+<main id="main">
+
+  <!-- ============ PHASE 00 / HERO ============ -->
+  <section id="phase-00" class="sec sec-hero" data-phase="0">
+    <div class="wrap">
+      <p class="micro hero-micro" data-reveal>PHASE 00 — AIDX COMPANY / TOKYO</p>
+      <h1 class="hero-title" id="hero-title" data-text="AIを、導入で終わらせない。">AIを、導入で終わらせない。</h1>
+      <p class="hero-sub" data-reveal>株式会社nextは、AI導入から人事・営業・採用・マーケティングの自動化までを一気通貫で実装するAIDXカンパニーです。</p>
+      <p class="hero-tagline" data-reveal><span class="tagline-tick" aria-hidden="true"></span>事業の「次」を、AIで実装する。</p>
+      <div class="hero-cta" data-reveal>
+        <a class="btn btn-primary btn-lg magnet" href="mailto:info@n-ext.co.jp?subject=%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87%E3%81%AE%E3%81%94%E4%BE%9D%E9%A0%BC">無料相談する</a>
+        <a class="btn btn-ghost btn-lg magnet" href="mailto:info@n-ext.co.jp?subject=%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E8%B3%87%E6%96%99%E5%B8%8C%E6%9C%9B">サービス資料をダウンロード</a>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span class="hs-label">SCROLL TO OPERATE</span>
+      <span class="hs-line"></span>
+    </div>
+    <div class="hero-coords" aria-hidden="true">N 35.6812° / E 139.7671°<br>SYSTEM: ONLINE</div>
+  </section>
+
+  <!-- ============ PHASE 01 / 課題提起 ============ -->
+  <section id="phase-01" class="sec sec-problem" data-phase="1">
+    <div class="wrap problem-wrap">
+      <p class="micro" data-reveal>PHASE 01 — THE ISSUE / WHY AI FAILS</p>
+      <div class="problem-stage">
+        <div class="problem-num" id="problem-num" aria-hidden="true">
+          <span id="problem-counter">0</span><span class="problem-unit">%</span>
+        </div>
+        <div class="problem-copy">
+          <h2 class="problem-title"><span class="pl">AI導入の8割は、</span><span class="pl">定着しない。</span></h2>
+          <p class="problem-sub">ツールを買うことと、事業が変わることは違う。nextは"定着と成果"から逆算して実装します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 02 / AI導入支援 Blueprint ============ -->
+  <section id="phase-02" class="sec sec-blueprint" data-phase="2">
+    <div class="hwrap">
+      <div class="htrack" id="bp-track">
+        <div class="hpanel hpanel-intro">
+          <p class="micro">PHASE 02 — AI IMPLEMENTATION / BLUEPRINT</p>
+          <span class="ghost-num" aria-hidden="true">01</span>
+          <h2 class="sec-title">現場に定着するAIを。</h2>
+          <p class="sec-sub">ツール選定で終わらせず、業務フローの再設計と社内浸透まで伴走します。</p>
+          <p class="hpanel-hint" aria-hidden="true">DRAG THROUGH THE BLUEPRINT →</p>
+        </div>
+        <div class="hpanel hpanel-chart">
+          <svg id="flowchart" viewBox="0 0 1900 560" fill="none" aria-label="AI導入の設計図フローチャート">
+            <!-- ノード -->
+            <rect class="fcd" x="40" y="230" width="210" height="100" rx="2"/>
+            <rect class="fcd" x="330" y="230" width="210" height="100" rx="2"/>
+            <polygon class="fcd" points="730,190 850,280 730,370 610,280"/>
+            <rect class="fcd" x="920" y="90" width="210" height="100" rx="2"/>
+            <rect class="fcd" x="920" y="370" width="210" height="100" rx="2"/>
+            <rect class="fcd" x="1230" y="230" width="210" height="100" rx="2"/>
+            <rect class="fcd fcd-final" x="1540" y="230" width="240" height="100" rx="2"/>
+            <!-- コネクタ -->
+            <path class="fcd" d="M250 280 L330 280"/>
+            <path class="fcd" d="M540 280 L610 280"/>
+            <path class="fcd" d="M850 280 L884 280 L884 140 L920 140"/>
+            <path class="fcd" d="M850 280 L884 280 L884 420 L920 420"/>
+            <path class="fcd" d="M1130 140 L1184 140 L1184 280 L1230 280"/>
+            <path class="fcd" d="M1130 420 L1184 420 L1184 280"/>
+            <path class="fcd" d="M1440 280 L1540 280"/>
+            <path class="fcd fcd-loop" d="M1660 230 L1660 48 L730 48 L730 190"/>
+            <!-- 寸法線（設計図ディテール） -->
+            <path class="fcd fcd-dim" d="M40 356 L40 372 M250 356 L250 372 M40 364 L250 364"/>
+            <path class="fcd fcd-dim" d="M1540 356 L1540 372 M1780 356 L1780 372 M1540 364 L1780 364"/>
+            <circle class="fcd fcd-dim" cx="730" cy="280" r="126"/>
+            <!-- ラベル -->
+            <text class="fcl fct" x="145" y="272" text-anchor="middle">業務ヒアリング</text>
+            <text class="fcl fcm" x="145" y="296" text-anchor="middle">BP-01 / AUDIT</text>
+            <text class="fcl fct" x="435" y="272" text-anchor="middle">業務フロー分解</text>
+            <text class="fcl fcm" x="435" y="296" text-anchor="middle">BP-02 / MAPPING</text>
+            <text class="fcl fct" x="730" y="272" text-anchor="middle">自動化判定</text>
+            <text class="fcl fcm" x="730" y="296" text-anchor="middle">BP-03 / DECISION</text>
+            <text class="fcl fct" x="1025" y="132" text-anchor="middle">ツール選定・PoC</text>
+            <text class="fcl fcm" x="1025" y="156" text-anchor="middle">BP-04A / AUTOMATE</text>
+            <text class="fcl fct" x="1025" y="412" text-anchor="middle">フロー再設計</text>
+            <text class="fcl fcm" x="1025" y="436" text-anchor="middle">BP-04B / REDESIGN</text>
+            <text class="fcl fct" x="1335" y="272" text-anchor="middle">社内浸透・研修</text>
+            <text class="fcl fcm" x="1335" y="296" text-anchor="middle">BP-05 / ONBOARD</text>
+            <text class="fcl fct fct-final" x="1660" y="272" text-anchor="middle">定着モニタリング</text>
+            <text class="fcl fcm" x="1660" y="296" text-anchor="middle">BP-06 / RETENTION</text>
+            <text class="fcl fcm" x="866" y="128" text-anchor="end">YES → 自動化</text>
+            <text class="fcl fcm" x="866" y="444" text-anchor="end">NO → 人の設計へ</text>
+            <text class="fcl fcm" x="1195" y="36">改善ループ / CONTINUOUS TUNING</text>
+            <text class="fcl fcm" x="145" y="392" text-anchor="middle">W: 220 — SCALE 1:1</text>
+            <text class="fcl fcm" x="1660" y="392" text-anchor="middle">FIXED UNTIL RETAINED</text>
+          </svg>
+        </div>
+        <div class="hpanel hpanel-out">
+          <p class="micro">OUTPUT — WHAT REMAINS</p>
+          <h3 class="hout-title">導入して終わり、を<br>設計図から消す。</h3>
+          <ul class="hout-list">
+            <li><i>01</i>業務フローの再設計図</li>
+            <li><i>02</i>現場向け運用トレーニング</li>
+            <li><i>03</i>定着までの伴走モニタリング</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 03 / AI人事自動化 Conveyor ============ -->
+  <section id="phase-03" class="sec sec-conveyor" data-phase="3">
+    <div class="conveyor-pin">
+      <div class="wrap conveyor-head">
+        <p class="micro" data-reveal>PHASE 03 — HR AUTOMATION / CONVEYOR</p>
+        <span class="ghost-num" aria-hidden="true">02</span>
+        <h2 class="sec-title" data-reveal>人事業務を、まるごと自動運転に。</h2>
+        <p class="sec-sub" data-reveal>応募対応から面接調整、入社手続きまで。人事はもう、判断だけしてください。</p>
+      </div>
+      <div class="belt" id="belt">
+        <div class="belt-line" aria-hidden="true"></div>
+        <div class="belt-gate" aria-hidden="true"><span>AUTO&nbsp;PROCESSOR</span></div>
+        <div class="belt-cards" id="belt-cards">
+          <article class="ccard"><header><span class="ccard-id">DOC-114</span><span class="ccard-dot"></span></header><h3>応募対応</h3><div class="ccard-lines"><i></i><i></i><i style="width:60%"></i></div><footer>新着応募 32件 / 自動返信</footer><span class="stamp">AUTO ✓</span></article>
+          <article class="ccard"><header><span class="ccard-id">DOC-115</span><span class="ccard-dot"></span></header><h3>書類選考</h3><div class="ccard-lines"><i></i><i style="width:80%"></i><i style="width:45%"></i></div><footer>要件マッチ / スコアリング</footer><span class="stamp">AUTO ✓</span></article>
+          <article class="ccard"><header><span class="ccard-id">DOC-116</span><span class="ccard-dot"></span></header><h3>面接調整</h3><div class="ccard-lines"><i style="width:70%"></i><i></i><i style="width:55%"></i></div><footer>候補日を自動打診</footer><span class="stamp">AUTO ✓</span></article>
+          <article class="ccard"><header><span class="ccard-id">DOC-117</span><span class="ccard-dot"></span></header><h3>内定連絡</h3><div class="ccard-lines"><i style="width:85%"></i><i style="width:65%"></i><i></i></div><footer>オファーレター生成</footer><span class="stamp">AUTO ✓</span></article>
+          <article class="ccard"><header><span class="ccard-id">DOC-118</span><span class="ccard-dot"></span></header><h3>入社手続き</h3><div class="ccard-lines"><i></i><i style="width:50%"></i><i style="width:75%"></i></div><footer>労務書類の回収・保管</footer><span class="stamp">AUTO ✓</span></article>
+        </div>
+        <div class="belt-counter" aria-hidden="true"><span class="micro">PROCESSED</span><b id="belt-count">0</b><span class="micro">/ 5 TASKS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 04 / AIスカウト Radar（ダーク） ============ -->
+  <section id="phase-04" class="sec sec-radar dark" data-phase="4">
+    <div class="wrap radar-wrap">
+      <div class="radar-copy">
+        <p class="micro micro-light" data-reveal>PHASE 04 — AI SCOUT / RADAR</p>
+        <span class="ghost-num ghost-light" aria-hidden="true">03</span>
+        <h2 class="sec-title" data-reveal>会いたい人材に、<br>AIが先に届く。</h2>
+        <p class="sec-sub" data-reveal>数百万のデータベースから、返信される文面で、24時間アプローチし続けます。</p>
+        <ul class="radar-stats" data-reveal>
+          <li><b data-count="24">0</b><span>H — 稼働時間 / 無休</span></li>
+          <li><b><span data-count="38">0</span>%</b><span>返信を前提に設計された文面</span></li>
+          <li><b>10<sup>6</sup>+</b><span>タレントデータベース</span></li>
+        </ul>
+      </div>
+      <div class="radar-stage" data-reveal>
+        <canvas id="radar-canvas"></canvas>
+        <div class="radar-frame" aria-hidden="true"><span>SCANNING…</span><span id="radar-clock">00:00:00</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 05 / AI自動フォーム営業 Terminal ============ -->
+  <section id="phase-05" class="sec sec-terminal" data-phase="5">
+    <div class="wrap term-wrap">
+      <div class="term-copy">
+        <p class="micro" data-reveal>PHASE 05 — FORM OUTREACH / TERMINAL</p>
+        <span class="ghost-num" aria-hidden="true">04</span>
+        <h2 class="sec-title" data-reveal>商談は、寝ている間に生まれる。</h2>
+        <p class="sec-sub" data-reveal>ターゲット抽出から文面生成・送信まで全自動。営業は商談だけに集中できます。</p>
+        <div class="term-kpi" data-reveal>
+          <span class="micro">FORMS SENT — TOTAL</span>
+          <b id="sent-counter">12,480</b>
+        </div>
+      </div>
+      <div class="term-stage" data-reveal id="terminal-root">
+        <div class="term-window">
+          <div class="term-titlebar"><i></i><i></i><i></i><span>next — sales-autopilot ~ zsh</span></div>
+          <div class="term-lines" id="term-lines"></div>
+        </div>
+        <div class="form-window" aria-hidden="true">
+          <div class="form-titlebar"><span>お問い合わせフォーム — 自動入力中</span><i class="form-live"></i></div>
+          <label>会社名<b id="ff-company"></b></label>
+          <label>ご担当者<b id="ff-name"></b></label>
+          <label>お問い合わせ内容<b id="ff-msg"></b></label>
+          <button type="button" class="form-send" id="ff-send" tabindex="-1">送信する</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 06 / ブルーカラー採用支援 Isometric ============ -->
+  <section id="phase-06" class="sec sec-iso" data-phase="6">
+    <div class="wrap">
+      <p class="micro" data-reveal>PHASE 06 — BLUE-COLLAR RECRUITING / ISOMETRIC</p>
+      <span class="ghost-num" aria-hidden="true">05</span>
+      <h2 class="sec-title" data-reveal>現場を支える人を、<br class="sp">現場を知るAIで。</h2>
+      <p class="sec-sub" data-reveal>建設・運送・介護・警備。4業界に特化した採用設計で「応募が来ない」を終わらせます。</p>
+    </div>
+    <div class="iso-stage">
+      <canvas id="iso-canvas" aria-label="建設・運送・介護・警備のアイソメトリック都市"></canvas>
+    </div>
+    <div class="wrap iso-cards">
+      <article class="icard" data-reveal><span class="icard-no">IND-01</span><h3>建設特化</h3><p>職人・施工管理の母集団形成を、現場言葉の求人設計で。</p><span class="icard-tag">CONSTRUCTION</span></article>
+      <article class="icard" data-reveal><span class="icard-no">IND-02</span><h3>運送特化</h3><p>ドライバー採用を、勤務実態に正直な訴求で立て直す。</p><span class="icard-tag">LOGISTICS</span></article>
+      <article class="icard" data-reveal><span class="icard-no">IND-03</span><h3>介護特化</h3><p>資格・シフト・通勤圏。介護人材の条件マッチを自動化。</p><span class="icard-tag">CARE</span></article>
+      <article class="icard" data-reveal><span class="icard-no">IND-04</span><h3>警備特化</h3><p>急な増員にも、待機人材プールとAI打診で即応する。</p><span class="icard-tag">SECURITY</span></article>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 07 / AIO最適化 Citation ============ -->
+  <section id="phase-07" class="sec sec-citation" data-phase="7">
+    <div class="wrap cite-wrap">
+      <div class="cite-copy">
+        <p class="micro" data-reveal>PHASE 07 — AIO / CITATION</p>
+        <span class="ghost-num" aria-hidden="true">06</span>
+        <h2 class="sec-title" data-reveal>検索の次は、AIに<br>「選ばれる」時代。</h2>
+        <p class="sec-sub" data-reveal>ChatGPTやAI検索が引用するコンテンツ設計へ。SEOの次の一手を、今。</p>
+      </div>
+      <div class="cite-stage" data-reveal id="citation-root">
+        <div class="orbit-layer" aria-hidden="true">
+          <span class="orbit-node">AIO</span>
+          <span class="orbit-node">LLMO</span>
+          <span class="orbit-node">引用設計</span>
+          <span class="orbit-node">構造化データ</span>
+          <span class="orbit-node">E-E-A-T</span>
+          <span class="orbit-node">エンティティ</span>
+        </div>
+        <div class="ai-window">
+          <div class="ai-titlebar"><i class="ai-logo"></i><span>AI ASSISTANT</span><em>GPT-ANSWER MODE</em></div>
+          <div class="ai-q"><span>Q.</span>AI導入を定着まで支援してくれる会社は？</div>
+          <div class="ai-a"><p id="ai-answer"></p><i class="ai-caret" aria-hidden="true"></i></div>
+          <div class="ai-cite" id="ai-cite"><span class="ai-cite-no">[1]</span><span class="ai-cite-url">n-ext.co.jp</span><span class="ai-cite-title">— 現場に定着するAIを。</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 08 / AI広告運用 Dashboard ============ -->
+  <section id="phase-08" class="sec sec-dashboard" data-phase="8">
+    <div class="wrap">
+      <p class="micro" data-reveal>PHASE 08 — AD OPERATIONS / DASHBOARD</p>
+      <span class="ghost-num" aria-hidden="true">07</span>
+      <h2 class="sec-title" data-reveal>広告の意思決定から、勘を外す。</h2>
+      <p class="sec-sub" data-reveal>GPT広告の運用設計・代行。生成AI時代の獲得チャネルをいち早く事業の武器に。</p>
+      <div class="dash-grid">
+        <div class="dash-panel dash-chart" data-reveal>
+          <div class="dash-panel-head"><span class="micro">LEADS — LIVE FEED</span><i class="dash-live"></i></div>
+          <canvas id="dash-canvas"></canvas>
+        </div>
+        <div class="dash-side">
+          <div class="dash-kpis" data-reveal>
+            <div class="kpi"><span class="micro">CPA</span><b><i data-kpi="-42" data-kpi-suffix="%">0</i></b><span class="kpi-note">獲得単価</span></div>
+            <div class="kpi"><span class="micro">商談化率</span><b><i data-kpi="+180" data-kpi-suffix="%">0</i></b><span class="kpi-note">対 運用前</span></div>
+            <div class="kpi"><span class="micro">ROAS</span><b><i data-kpi="3.4" data-kpi-prefix="×" data-kpi-decimal="1">0</i></b><span class="kpi-note">広告費回収率</span></div>
+          </div>
+          <div class="ab-stage" data-reveal id="ab-stage">
+            <div class="dash-panel-head"><span class="micro">A/B CREATIVE — AUTO ROTATION</span></div>
+            <div class="ab-cards">
+              <div class="ab-card is-front" id="ab-a"><span class="ab-tag">VAR — A</span><p>AI導入、定着まで伴走。</p><div class="ab-meta"><span>CTR <b>4.2%</b></span><em class="ab-win">WINNER</em></div></div>
+              <div class="ab-card" id="ab-b"><span class="ab-tag">VAR — B</span><p>その業務、寝ている間に終わる。</p><div class="ab-meta"><span>CTR <b>6.8%</b></span><em class="ab-win">WINNER</em></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 導入フロー ============ -->
+  <section id="flow" class="sec sec-flow">
+    <div class="wrap">
+      <p class="micro" data-reveal>OPERATION FLOW — FROM AUDIT TO RETENTION</p>
+      <h2 class="sec-title" data-reveal>設計図が、稼働するまで。</h2>
+      <div class="flow-stage">
+        <svg id="flow-svg" viewBox="0 0 1200 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path id="flow-line" d="M60 110 L1140 110"/>
+          <circle class="flow-node" cx="60" cy="110" r="9"/>
+          <circle class="flow-node" cx="420" cy="110" r="9"/>
+          <circle class="flow-node" cx="780" cy="110" r="9"/>
+          <circle class="flow-node" cx="1140" cy="110" r="9"/>
+        </svg>
+        <ol class="flow-steps">
+          <li class="flow-step"><span class="micro">STEP 01</span><h3>診断</h3><p>現状業務とデータの棚卸し。効果の出る領域を特定します。</p></li>
+          <li class="flow-step"><span class="micro">STEP 02</span><h3>設計</h3><p>自動化領域の設計と優先順位。定着から逆算した設計図を引きます。</p></li>
+          <li class="flow-step"><span class="micro">STEP 03</span><h3>実装</h3><p>ツール構築・システム接続・検証。現場のフローに組み込みます。</p></li>
+          <li class="flow-step"><span class="micro">STEP 04</span><h3>定着運用</h3><p>研修と改善ループの運用。成果が出るまで伴走します。</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 会社概要 ============ -->
+  <section id="company" class="sec sec-company">
+    <div class="wrap wrap-narrow">
+      <p class="micro" data-reveal>COMPANY — CORPORATE PROFILE</p>
+      <h2 class="sec-title" data-reveal>会社概要</h2>
+      <dl class="company-table" data-reveal>
+        <div><dt>社名</dt><dd>株式会社next</dd></div>
+        <div><dt>代表取締役</dt><dd>山本大介</dd></div>
+        <div><dt>所在地</dt><dd>東京都</dd></div>
+        <div><dt>事業内容</dt><dd>AI導入支援／AI人事自動化／AIスカウト／AI自動フォーム営業／ブルーカラー採用支援／AIO最適化／AI広告運用</dd></div>
+        <div><dt>URL</dt><dd><a href="https://n-ext.co.jp">https://n-ext.co.jp</a></dd></div>
+        <div><dt>お問い合わせ</dt><dd><a href="mailto:info@n-ext.co.jp">info@n-ext.co.jp</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section id="cta" class="sec sec-cta">
+    <div class="wrap cta-wrap">
+      <p class="micro" data-reveal>FINAL PHASE — ALL SYSTEMS CONVERGED</p>
+      <h2 class="cta-title" id="cta-title" data-text="次の打ち手は、決まっていますか。">次の打ち手は、決まっていますか。</h2>
+      <div class="cta-actions" data-reveal>
+        <a class="btn btn-primary btn-xl magnet" href="mailto:info@n-ext.co.jp?subject=%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87%E3%81%AE%E3%81%94%E4%BE%9D%E9%A0%BC">無料相談する</a>
+        <a class="cta-sub magnet" href="mailto:info@n-ext.co.jp?subject=%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E8%B3%87%E6%96%99%E5%B8%8C%E6%9C%9B">サービス資料をダウンロード</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span class="footer-brand">n<span class="brand-dash">—</span>ext</span>
+    <span class="footer-note micro">BLUEPRINT IN OPERATION — TOKYO, JP</span>
+    <span class="footer-copy">© 株式会社next / <a href="https://n-ext.co.jp">n-ext.co.jp</a></span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sections.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
