@@ -205,7 +205,7 @@
   function runLoader(done) {
     var loader = $('#loader');
     if (!loader) { done(); return; }
-    if (lenis) { console.log('[probe] loader: lenis.stop()'); lenis.stop(); }
+    if (lenis) lenis.stop();
     document.body.style.overflow = 'hidden';
 
     var strokes = $$('#loader-logo .ll');
@@ -221,7 +221,7 @@
       onComplete: function () {
         loader.style.display = 'none';
         document.body.style.overflow = '';
-        if (lenis) { lenis.start(); console.log('[probe] loader complete: lenis.start(), isStopped=', lenis.isStopped); }
+        if (lenis) lenis.start();
         ScrollTrigger.refresh();
         buildSpine(false);
         if (done) done();
