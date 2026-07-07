@@ -147,7 +147,8 @@
         var y0 = window.scrollY;
         setTimeout(function () {
           if (Math.abs(window.scrollY - y0) < 2) {
-            target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+            // 非表示タブではsmoothも凍結されるため即時ジャンプ
+            target.scrollIntoView({ behavior: (REDUCED || document.hidden) ? 'auto' : 'smooth' });
           }
         }, 300);
       } else {
@@ -217,8 +218,11 @@
     var pctEl = $('#loader-pct');
     var pct = { v: 0 };
 
+    var finished = false;
     var tl = gsap.timeline({
       onComplete: function () {
+        if (finished) return;
+        finished = true;
         loader.style.display = 'none';
         document.body.style.overflow = '';
         if (lenis) lenis.start();
@@ -236,6 +240,31 @@
       .to('#loader-bar-fill', { scaleX: 1, duration: 1.9, ease: 'power2.inOut' }, 0)
       .to('.loader-inner', { opacity: 0, y: -24, duration: 0.5, ease: 'power3.in' }, '+=0.3')
       .to(loader, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' }, '-=0.25');
+
+    // ウォッチドッグ: 非表示タブ読込等でrAFが凍結しタイムラインが進まない場合、
+    // 強制的に完了させてスクロールロック(overflow:hidden + Lenis停止)の取り残しを防ぐ。
+    // tl.progress(1)は上のonCompleteを同期的に発火させる。
+    function forceComplete() {
+      if (finished) return;
+      try { tl.progress(1); } catch (e) { /* noop */ }
+      if (!finished) { // progress(1)でも完了しなかった場合の最終保険
+        finished = true;
+        loader.style.display = 'none';
+        document.body.style.overflow = '';
+        if (lenis) lenis.start();
+        ScrollTrigger.refresh();
+        buildSpine(false);
+        if (done) done();
+      }
+    }
+    setTimeout(forceComplete, 7000);
+    document.addEventListener('visibilitychange', function onVis() {
+      if (!document.hidden) {
+        // 表示された時点で自然完了予定時刻を過ぎていれば即完了させる
+        setTimeout(function () { if (tl.progress() < 0.05) forceComplete(); }, 1200);
+        if (finished) document.removeEventListener('visibilitychange', onVis);
+      }
+    });
   }
 
   /* ============ スクランブルテキスト ============ */
