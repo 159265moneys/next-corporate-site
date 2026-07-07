@@ -892,15 +892,77 @@ main{ position:relative; z-index:2; }
   .form-window{ justify-self:start; margin:-30px 0 0; }
 }
 
-/* ============ PHASE 06 / アイソメトリック ============ */
+/* ============ PHASE 06 / アイソメトリック・ジオラマ ============ */
 .sec-iso{ padding:18vh 0 14vh; }
 .iso-stage{
   width:min(1240px, calc(100% - 32px)); margin:6vh auto 4vh;
   border:1px solid var(--line-soft);
-  background:rgba(250,251,252,.5);
+  background:
+    radial-gradient(92% 74% at 50% 36%, rgba(255,255,255,.9), rgba(236,242,250,.35) 68%, rgba(236,242,250,0)),
+    rgba(250,251,252,.55);
   position:relative;
 }
-#iso-canvas{ width:100%; aspect-ratio:1200/560; }
+#iso-canvas{ width:100%; aspect-ratio:1200/620; }
+@media (max-width:820px){ #iso-canvas{ aspect-ratio:10/7; } }
+
+/* コネクタ線（world→screen 射影でチップと接続） */
+.iso-links{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:3; overflow:visible;
+}
+.iso-links path{
+  fill:none; stroke:var(--line); stroke-width:1.2;
+  transition:opacity .5s, stroke .35s;
+}
+.iso-links circle{
+  fill:var(--bg); stroke:var(--line); stroke-width:1.2;
+  transition:opacity .5s, stroke .35s;
+}
+.iso-links path.lit, .iso-links circle.lit{ stroke:var(--accent); }
+.iso-links circle.lit{ fill:var(--accent); }
+
+/* キャプションチップ（図形と重ならない下段固定グリッド） */
+.iso-chips{
+  position:relative; z-index:4;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+  padding:30px 16px 16px;
+}
+.iso-chip{
+  border:1px solid var(--line); border-radius:2px;
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(232,238,246,.65));
+  box-shadow:0 6px 16px -12px rgba(26,35,51,.28), inset 0 1px 0 #fff;
+  padding:9px 12px 8px;
+  opacity:0; transform:translateY(10px);
+  transition:opacity .6s var(--ease-out), transform .6s var(--ease-out),
+             border-color .35s, box-shadow .35s, background .35s;
+}
+.iso-chip.on{ opacity:1; transform:none; }
+.iso-chip.lit{
+  border-color:var(--accent);
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(219,231,250,.75));
+  box-shadow:0 14px 26px -16px rgba(37,99,235,.4), inset 0 1px 0 #fff;
+}
+.isoc-no{
+  display:block;
+  font-family:var(--font-en); font-size:9px; font-weight:700;
+  letter-spacing:.22em; color:var(--accent);
+}
+.isoc-jp{
+  display:inline-block; margin-top:3px;
+  font-size:14px; font-weight:900; letter-spacing:.05em; line-height:1.3;
+}
+.isoc-en{
+  display:block; margin-top:2px;
+  font-family:var(--font-en); font-size:8.5px; font-weight:500;
+  letter-spacing:.22em; color:var(--ink-40);
+}
+@media (max-width:820px){
+  .iso-chips{ gap:6px; padding:22px 8px 10px; }
+  .iso-chip{ padding:7px 8px 6px; }
+  .isoc-no{ font-size:8px; letter-spacing:.14em; }
+  .isoc-jp{ font-size:12px; }
+  .isoc-en{ font-size:7px; letter-spacing:.1em; }
+}
 .iso-cards{
   display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;
 }
@@ -1274,6 +1336,13 @@ main{ position:relative; z-index:2; }
 .icard:hover{
   box-shadow:0 24px 44px -26px rgba(37,99,235,.4), inset 0 0 0 1px rgba(255,255,255,.8), 0 0 0 1px rgba(37,99,235,.25);
 }
+/* ジオラマ主役化との同期ハイライト */
+.icard.is-live{
+  transform:translateY(-6px);
+  border-color:var(--accent);
+  box-shadow:0 24px 44px -26px rgba(37,99,235,.4), inset 0 0 0 1px rgba(255,255,255,.8), 0 0 0 1px rgba(37,99,235,.25);
+}
+.icard.is-live::before,.icard.is-live::after{ opacity:1; width:16px; height:16px; }
 .icard-no{
   display:inline-block;
   border:1px solid rgba(37,99,235,.35);
@@ -1482,5 +1551,6 @@ html.js.reduced body{ cursor:auto; }
 .reduced #flowchart .fjn-g{ opacity:1 !important; }
 .reduced #flowchart .fpl{ opacity:0 !important; animation:none !important; }
 .reduced .micro.chip::before{ animation:none; }
+.reduced .iso-chip,.reduced .iso-links path,.reduced .iso-links circle{ transition:none; }
 .reduced .ft-track{ animation:none; }
 .reduced #flowchart .fjh{ animation:none; opacity:.35; }

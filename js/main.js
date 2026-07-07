@@ -131,19 +131,28 @@
   }
 
   function initAnchors() {
-    $$('[data-scrollto]').forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        var href = a.getAttribute('href');
-        if (!href || href.charAt(0) !== '#') return;
-        var target = $(href);
-        if (!target) return;
-        e.preventDefault();
-        if (lenis) {
-          lenis.scrollTo(target, { duration: 1.6, easing: function (t) { return 1 - Math.pow(1 - t, 4); } });
-        } else {
-          target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
-        }
-      });
+    // 委譲方式: 後からinnerHTML再構築されたアンカーにも効く
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest ? e.target.closest('[data-scrollto]') : null;
+      if (!a) return;
+      var href = a.getAttribute('href');
+      if (!href || href.charAt(0) !== '#') return;
+      var target = $(href);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) {
+        if (lenis.isStopped) lenis.start(); // 停止状態の取り残し対策
+        lenis.scrollTo(target, { duration: 1.6, easing: function (t) { return 1 - Math.pow(1 - t, 4); } });
+        // Lenisが不健康なロード(raf未稼働等)でもアンカーを保証するフォールバック
+        var y0 = window.scrollY;
+        setTimeout(function () {
+          if (Math.abs(window.scrollY - y0) < 2) {
+            target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+          }
+        }, 300);
+      } else {
+        target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+      }
     });
   }
 
@@ -196,7 +205,7 @@
   function runLoader(done) {
     var loader = $('#loader');
     if (!loader) { done(); return; }
-    if (lenis) lenis.stop();
+    if (lenis) { console.log('[probe] loader: lenis.stop()'); lenis.stop(); }
     document.body.style.overflow = 'hidden';
 
     var strokes = $$('#loader-logo .ll');
@@ -212,7 +221,7 @@
       onComplete: function () {
         loader.style.display = 'none';
         document.body.style.overflow = '';
-        if (lenis) lenis.start();
+        if (lenis) { lenis.start(); console.log('[probe] loader complete: lenis.start(), isStopped=', lenis.isStopped); }
         ScrollTrigger.refresh();
         buildSpine(false);
         if (done) done();
@@ -235,8 +244,18 @@
     var final = el.getAttribute('data-text') || el.textContent;
     var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/<>+*=';
     var start = null;
+    var finished = false;
+    // 同一要素への再入は前のループを無効化
+    var token = (el.__scrambleToken = (el.__scrambleToken || 0) + 1);
     el.style.opacity = '1';
+    function finish() {
+      if (finished || token !== el.__scrambleToken) return;
+      finished = true;
+      el.textContent = final;
+      if (done) done();
+    }
     function tick(t) {
+      if (finished || token !== el.__scrambleToken) return;
       if (start === null) start = t;
       var p = clamp01((t - start) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
@@ -248,9 +267,11 @@
       }
       el.textContent = out;
       if (p < 1) requestAnimationFrame(tick);
-      else { el.textContent = final; if (done) done(); }
+      else finish();
     }
     requestAnimationFrame(tick);
+    // rAFが途絶えても必ず正しい最終文字列に着地させるフェイルセーフ
+    setTimeout(finish, dur + 450);
   }
 
   /* ============ 初期非表示（JSが担う: CDN失敗時も内容は見える） ============ */
@@ -546,15 +567,41 @@
     });
   }
 
-  /* ============ PHASE 06：アイソメ都市（スクロール連動ビルド） ============ */
+  /* ============ PHASE 06：アイソメ・ジオラマ（組み上げ + 主役化ツアー） ============ */
   function initIso() {
     if (!engines.iso) return;
+
+    // 1) 組み上がり：パーツが下から順に stagger + オーバーシュートで着地
     ScrollTrigger.create({
       trigger: '.iso-stage',
-      start: 'top 92%',
-      end: 'top 8%',
-      scrub: 0.6,
+      start: 'top 94%',
+      end: 'top 30%',
+      scrub: 0.5,
       onUpdate: function (self) { engines.iso.setProgress(self.progress); }
+    });
+
+    // 2) 4業界の主役化ツアー：ステージをピンし、カメラが緩くドリー/パン。
+    //    非主役は彩度・明度を落とし、特化カードもハイライト同期。
+    if (!engines.iso.setFocus) return;
+    var cards = $$('.icard');
+    var focusIdx = null;
+    function focus(i) {
+      if (i === focusIdx) return;
+      focusIdx = i;
+      engines.iso.setFocus(i);
+      cards.forEach(function (c, ci) { c.classList.toggle('is-live', ci === i); });
+    }
+    ScrollTrigger.create({
+      trigger: '.iso-stage',
+      start: 'center 52%',
+      end: '+=150%',
+      pin: true,
+      anticipatePin: 1,
+      onUpdate: function (self) {
+        focus(Math.min(3, Math.floor(self.progress * 4)));
+      },
+      onLeave: function () { focus(-1); },
+      onLeaveBack: function () { focus(-1); }
     });
   }
 
